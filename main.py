@@ -2,6 +2,20 @@
 from tkinter import *
 import tkintermapview
 
+from geopy.geocoders import Nominatim
+
+
+class Gabinet:
+    def __init__(self, nazwa, ulica, miejscowosc, nr_budynku):
+        # ... (previous attributes)
+        self.coordinates = self.get_coordinates()
+
+    def get_coordinates(self):
+        geolocator = Nominatim(user_agent="mapbook_ak")
+        address = f"{self.ulica} {self.nr_budynku}, {self.miejscowosc}, Polska"
+        location = geolocator.geocode(address)
+        return [location.latitude, location.longitude] if location else [52.23, 21.01]
+
 root = Tk()
 root.geometry("1200x900")
 root.title("Mapa Gabinetów")
