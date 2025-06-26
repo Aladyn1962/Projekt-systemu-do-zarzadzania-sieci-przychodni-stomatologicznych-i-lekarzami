@@ -625,4 +625,5 @@ map_widget.set_position(52.23, 21.0)
 map_widget.set_zoom(6)
 map_widget.grid(row=0, column=0, columnspan=3)
 
+
 root.mainloop()
