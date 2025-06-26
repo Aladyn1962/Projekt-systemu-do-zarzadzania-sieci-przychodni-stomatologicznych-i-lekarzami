@@ -3,7 +3,24 @@ from tkinter import *
 import tkintermapview
 
 from geopy.geocoders import Nominatim
+# pracownik.py
+from geopy.geocoders import Nominatim
 
+
+class Pracownik:
+    def __init__(self, imie, nazwisko, ulica, miejscowosc, nr_budynku):
+        self.imie = imie
+        self.nazwisko = nazwisko
+        self.ulica = ulica
+        self.miejscowosc = miejscowosc
+        self.nr_budynku = nr_budynku
+        self.coordinates = self.get_coordinates()
+
+    def get_coordinates(self):
+        geolocator = Nominatim(user_agent="mapbook_ak")
+        address = f"{self.ulica} {self.nr_budynku}, {self.miejscowosc}, Polska"
+        location = geolocator.geocode(address)
+        return [location.latitude, location.longitude] if location else [52.23, 21.01]
 
 class Gabinet:
     def __init__(self, nazwa, ulica, miejscowosc, nr_budynku):
