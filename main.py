@@ -1,5 +1,6 @@
 # main.py
 from tkinter import *
+import tkintermapview
 
 root = Tk()
 root.geometry("1200x900")
@@ -18,3 +19,8 @@ ramka_szczegoly.grid(row=1, column=0, columnspan=2)
 ramka_mapa.grid(row=2, column=0, columnspan=2)
 
 root.mainloop()
+
+map_widget = tkintermapview.TkinterMapView(ramka_mapa, width=1200, height=600, corner_radius=5)
+map_widget.set_position(52.23, 21.0)  # Warsaw coordinates
+map_widget.set_zoom(6)
+map_widget.grid(row=0, column=0, columnspan=3)
