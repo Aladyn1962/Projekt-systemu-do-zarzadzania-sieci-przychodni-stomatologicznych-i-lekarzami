@@ -240,7 +240,285 @@ def open_pacjenci_window(gabinet):
 
     def start_edit_pacjent():
         nonlocal selected_index
-        sel = listbox.curselection(
+        sel = listbox.curselection()
+        if not sel:
+            return
+        selected_index = sel[0]
+        p = gabinet.pacjenci[selected_index]
+        entry_imie.delete(0, END)
+        entry_imie.insert(0, p.imie)
+        entry_nazwisko.delete(0, END)
+        entry_nazwisko.insert(0, p.nazwisko)
+        entry_ulica.delete(0, END)
+        entry_ulica.insert(0, p.ulica)
+        entry_miejscowosc.delete(0, END)
+        entry_miejscowosc.insert(0, p.miejscowosc)
+        entry_nr_budynku.delete(0, END)
+        entry_nr_budynku.insert(0, p.nr_budynku)
+
+        button_save_edit.config(state=NORMAL)
+        button_add.config(state=DISABLED)
+        listbox.config(state=DISABLED)
+        button_edit.config(state=DISABLED)
+        button_delete.config(state=DISABLED)
+
+    def save_edit():
+        nonlocal selected_index
+        if selected_index is not None:
+            p = gabinet.pacjenci[selected_index]
+            p.imie = entry_imie.get()
+            p.nazwisko = entry_nazwisko.get()
+            p.ulica = entry_ulica.get()
+            p.miejscowosc = entry_miejscowosc.get()
+            p.nr_budynku = entry_nr_budynku.get()
+            # Update coordinates
+            p.coordinates = p.get_coordinates()
+            if p.marker:
+                p.marker.delete()
+                p.marker = map_widget.set_marker(
+                    p.coordinates[0], p.coordinates[1],
+                    text=f"{p.imie} {p.nazwisko}",
+                    marker_color_circle="blue",
+                    marker_color_outside="blue",
+                    font=("Helvetica Bold", 10)
+                )
+            refresh_list()
+            entry_imie.delete(0, END)
+            entry_nazwisko.delete(0, END)
+            entry_ulica.delete(0, END)
+            entry_miejscowosc.delete(0, END)
+            entry_nr_budynku.delete(0, END)
+
+            button_save_edit.config(state=DISABLED)
+            button_add.config(state=NORMAL)
+            listbox.config(state=NORMAL)
+            button_edit.config(state=NORMAL)
+            button_delete.config(state=NORMAL)
+            selected_index = None
+        pacj_window.destroy()
+
+    def delete_pacjent():
+        sel = listbox.curselection()
+        if sel:
+            idx = sel[0]
+            if gabinet.pacjenci[idx].marker:
+                gabinet.pacjenci[idx].marker.delete()
+            del gabinet.pacjenci[idx]
+            refresh_list()
+
+    button_add = Button(pacj_window, text="Dodaj", command=add_pacjent)
+    button_add.pack(pady=5)
+
+    button_save_edit = Button(pacj_window, text="Zapisz", state=DISABLED, command=save_edit)
+    button_save_edit.pack(pady=5)
+
+    button_edit = Button(pacj_window, text="Edytuj pacjenta", command=start_edit_pacjent)
+    button_edit.pack(pady=5)
+
+    button_delete = Button(pacj_window, text="Usuń", command=delete_pacjent)
+    button_delete.pack(pady=5)
+
+    Button(pacj_window, text="Pokaż na mapie",
+           command=lambda: gabinet.show_patient_locations()).pack(pady=5)
+
+    Button(pacj_window, text="Zamknij",
+           command=lambda: [gabinet.clear_patient_markers(), pacj_window.destroy()]).pack(pady=10)
+
+    refresh_list()
+
+
+def open_pracownicy_window(gabinet):
+    prac_window = Toplevel(root)
+    prac_window.title(f"Pracownicy - {gabinet.nazwa}")
+    prac_window.geometry("400x500")
+
+    listbox = Listbox(prac_window, width=40, height=10)
+    listbox.pack(pady=10)
+
+    Label(prac_window, text="Imię:").pack()
+    entry_imie = Entry(prac_window)
+    entry_imie.pack()
+
+    Label(prac_window, text="Nazwisko:").pack()
+    entry_nazwisko = Entry(prac_window)
+    entry_nazwisko.pack()
+
+    Label(prac_window, text="Ulica:").pack()
+    entry_ulica = Entry(prac_window)
+    entry_ulica.pack()
+
+    Label(prac_window, text="Miejscowość:").pack()
+    entry_miejscowosc = Entry(prac_window)
+    entry_miejscowosc.pack()
+
+    Label(prac_window, text="Nr budynku:").pack()
+    entry_nr_budynku = Entry(prac_window)
+    entry_nr_budynku.pack()
+
+    selected_index = None
+
+    def refresh_list():
+        listbox.delete(0, END)
+        for p in gabinet.pracownicy:
+            listbox.insert(END, f"{p.imie} {p.nazwisko}")
+
+    def add_pracownik():
+        imie = entry_imie.get()
+        nazwisko = entry_nazwisko.get()
+        ulica = entry_ulica.get()
+        miejscowosc = entry_miejscowosc.get()
+        nr_budynku = entry_nr_budynku.get()
+        if imie and nazwisko and ulica and miejscowosc and nr_budynku:
+            gabinet.pracownicy.append(Pracownik(imie, nazwisko, ulica, miejscowosc, nr_budynku))
+            entry_imie.delete(0, END)
+            entry_nazwisko.delete(0, END)
+            entry_ulica.delete(0, END)
+            entry_miejscowosc.delete(0, END)
+            entry_nr_budynku.delete(0, END)
+            refresh_list()
+
+    def start_edit_pracownik():
+        nonlocal selected_index
+        sel = listbox.curselection()
+        if not sel:
+            return
+        selected_index = sel[0]
+        p = gabinet.pracownicy[selected_index]
+        entry_imie.delete(0, END)
+        entry_imie.insert(0, p.imie)
+        entry_nazwisko.delete(0, END)
+        entry_nazwisko.insert(0, p.nazwisko)
+        entry_ulica.delete(0, END)
+        entry_ulica.insert(0, p.ulica)
+        entry_miejscowosc.delete(0, END)
+        entry_miejscowosc.insert(0, p.miejscowosc)
+        entry_nr_budynku.delete(0, END)
+        entry_nr_budynku.insert(0, p.nr_budynku)
+
+        button_save_edit.config(state=NORMAL)
+        button_add.config(state=DISABLED)
+        listbox.config(state=DISABLED)
+        button_edit.config(state=DISABLED)
+        button_delete.config(state=DISABLED)
+
+    def save_edit():
+        nonlocal selected_index
+        if selected_index is not None:
+            p = gabinet.pracownicy[selected_index]
+            p.imie = entry_imie.get()
+            p.nazwisko = entry_nazwisko.get()
+            p.ulica = entry_ulica.get()
+            p.miejscowosc = entry_miejscowosc.get()
+            p.nr_budynku = entry_nr_budynku.get()
+            # Update coordinates
+            p.coordinates = p.get_coordinates()
+            if p.marker:
+                p.marker.delete()
+                p.marker = map_widget.set_marker(
+                    p.coordinates[0], p.coordinates[1],
+                    text=f"{p.imie} {p.nazwisko}",
+                    marker_color_circle="green",
+                    marker_color_outside="green",
+                    font=("Helvetica Bold", 10)
+                )
+            refresh_list()
+            entry_imie.delete(0, END)
+            entry_nazwisko.delete(0, END)
+            entry_ulica.delete(0, END)
+            entry_miejscowosc.delete(0, END)
+            entry_nr_budynku.delete(0, END)
+
+            button_save_edit.config(state=DISABLED)
+            button_add.config(state=NORMAL)
+            listbox.config(state=NORMAL)
+            button_edit.config(state=NORMAL)
+            button_delete.config(state=NORMAL)
+            selected_index = None
+        prac_window.destroy()
+
+    def delete_pracownik():
+        sel = listbox.curselection()
+        if sel:
+            idx = sel[0]
+            if gabinet.pracownicy[idx].marker:
+                gabinet.pracownicy[idx].marker.delete()
+            del gabinet.pracownicy[idx]
+            refresh_list()
+
+    button_add = Button(prac_window, text="Dodaj", command=add_pracownik)
+    button_add.pack(pady=5)
+
+    button_save_edit = Button(prac_window, text="Zapisz", state=DISABLED, command=save_edit)
+    button_save_edit.pack(pady=5)
+
+    button_edit = Button(prac_window, text="Edytuj pracownika", command=start_edit_pracownik)
+    button_edit.pack(pady=5)
+
+    button_delete = Button(prac_window, text="Usuń", command=delete_pracownik)
+    button_delete.pack(pady=5)
+
+    Button(prac_window, text="Pokaż na mapie",
+           command=lambda: gabinet.show_worker_locations()).pack(pady=5)
+
+    Button(prac_window, text="Zamknij",
+           command=lambda: [gabinet.clear_worker_markers(), prac_window.destroy()]).pack(pady=10)
+
+    refresh_list()
+
+
+def show_pacjenci_window():
+    global active_gabinet
+    if listbox_gabinety.curselection():
+        i = listbox_gabinety.curselection()[0]
+        active_gabinet = gabinet_list[i]
+        open_pacjenci_window(active_gabinet)
+
+
+def show_pracownicy_window():
+    global active_gabinet
+    if listbox_gabinety.curselection():
+        i = listbox_gabinety.curselection()[0]
+        active_gabinet = gabinet_list[i]
+        open_pracownicy_window(active_gabinet)
+
+
+def dodaj_gabinet():
+    nazwa = entry_nazwa.get()
+    ulica = entry_ulica.get()
+    miejscowosc = entry_miejscowosc.get()
+    nr = entry_nr_budynku.get()
+
+    gabinet = Gabinet(nazwa, ulica, miejscowosc, nr)
+    gabinet_list.append(gabinet)
+    czysc_formularz()
+    pokaz_liste_gabinetow()
+
+
+def czysc_formularz():
+    entry_nazwa.delete(0, END)
+    entry_ulica.delete(0, END)
+    entry_miejscowosc.delete(0, END)
+    entry_nr_budynku.delete(0, END)
+
+
+def pokaz_liste_gabinetow():
+    listbox_gabinety.delete(0, END)
+    for i, gabinet in enumerate(gabinet_list):
+        listbox_gabinety.insert(i, f"{i + 1}. {gabinet.nazwa}, {gabinet.ulica}")
+
+
+def usun_gabinet():
+    i = listbox_gabinety.index(ACTIVE)
+    gabinet_list[i].marker.delete()
+    # Remove all patient and worker markers
+    for pacjent in gabinet_list[i].pacjenci:
+        if pacjent.marker:
+            pacjent.marker.delete()
+    for pracownik in gabinet_list[i].pracownicy:
+        if pracownik.marker:
+            pracownik.marker.delete()
+    gabinet_list.pop(i)
+    pokaz_liste_gabinetow()
 
 
 def pokaz_szczegoly_gabinetu():
