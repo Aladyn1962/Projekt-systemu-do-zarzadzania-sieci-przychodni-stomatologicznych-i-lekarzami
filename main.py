@@ -63,3 +63,18 @@ def dodaj_gabinet():
     gabinet = Gabinet(nazwa, ulica, miejscowosc, nr)
     gabinet_list.append(gabinet)
     pokaz_liste_gabinetow()
+
+    # gabinet.py
+    class Gabinet:
+        def __init__(self, nazwa, ulica, miejscowosc, nr_budynku, map_widget):
+            # ... (previous initialization)
+            self.marker = map_widget.set_marker(
+                self.coordinates[0],
+                self.coordinates[1],
+                text=self.nazwa
+            )
+
+    # main.py
+    def dodaj_gabinet():
+        # ... (previous code)
+        gabinet = Gabinet(nazwa, ulica, miejscowosc, nr, map_widget)
